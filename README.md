@@ -39,7 +39,7 @@ To install the PDF Research Assistant WebApp, please follow these steps:
 
 3. Create a new file named `.env` in the project directory and add the following environment variables:
    ```
-   OPENAI_API_KEY=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
+   OPENAI_API_KEY=sk-0jFhNZGE2eEvC*********************
    ```
     ### Replace the value of `OPENAI_API_KEY` with your OpenAI API key !!!
 
