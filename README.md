@@ -12,7 +12,9 @@ This is a Python based application that allows you to chat with a bot/model base
 ## How It Works
 ------------
 
-[//]: # (!PDF Research Assistant WebApp Diagram]&#40;./docs/PDF-LangChain.jpg&#41;)
+![PDF Research Assistant WebApp Diagram](/docs/david1.png)
+![PDF Research Assistant WebApp Diagram](/docs/david2.png)
+![PDF Research Assistant WebApp Diagram](/docs/david3.png)
 
 The application follows these steps to provide responses to your questions:
 
