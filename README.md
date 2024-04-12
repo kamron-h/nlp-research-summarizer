@@ -1,19 +1,38 @@
 
 
-**NLP Research Assistant** 
+# NLP Research Assistant
+#### LangChain, OpenAI, PgVector, and Flask NLP chatbot for academic literature review assistance.
 
-**Description**
+## Description
 
-* Provide a brief description of your NLP chatbot project, what it does, and the problem it solves.
+* This is a Python based application that allows you to chat with a bot/model based on the input of multiple PDF documents. You can ask questions about the PDFs using natural language, and the application will provide relevant responses based on the content of the documents. Utilizing GPT-4 as large language model to generate accurate answers to your queries.
 
-**Installation**
 
-**Prerequisites**
+## How It Works
 
-* Python 3.x ([https://www.python.org/downloads/](https://www.python.org/downloads/))
+[//]: # (!PDF Research Assistant WebApp Diagram]&#40;./docs/PDF-LangChain.jpg&#41;)
+
+The application follows these steps to provide responses to your questions:
+
+1. PDF Loading: The app reads multiple PDF documents and extracts their text content.
+
+2. Text Chunking: The extracted text is divided into smaller chunks that can be processed effectively.
+
+3. Language Model: The application utilizes a language model to generate vector representations (embeddings) of the text chunks.
+
+4. Similarity Matching: When you ask a question, the app compares it with the text chunks and identifies the most semantically similar ones.
+
+5. Response Generation: The selected chunks are passed to the language model, which generates a response based on the relevant content of the PDFs.
+
+
+## Installation
+
+### Prerequisites
+
+* Python 3.9 ([https://www.python.org/downloads/](https://www.python.org/downloads/))
 * pip (usually installed with Python)
 
-**Steps**
+### Steps
 
 1.  **Clone the repository:**
 
@@ -35,7 +54,7 @@
     pip install -r requirements.txt
     ```
 
-**Running the Application**
+### Running the Application
 
 1.  **Make sure your virtual environment is activated (if you created one).**
 
@@ -47,23 +66,16 @@
 
     * This typically starts the app at: http://127.0.0.1:5000/
 
-**Usage**
+### Usage
 
 * Open the provided URL (e.g.,  http://127.0.0.1:5000/) in your web browser.
 * Navigate to the chatbot interface.
 * Start interacting with the chatbot!
 
-**Additional Notes**
+### Additional Notes
 
 * **Configuration:** If you have any app-specific configuration (e.g., API keys), explain how to set them up. 
 * **Database:** If you're using a database for chat history, include setup instructions.
 
-**Contributing**
-
-If you'd like to contribute, please refer to CONTRIBUTING.md: create a CONTRIBUTING.md file if needed or open an issue.
-
-**License**
-
-This project is licensed under the MIT License: optionally, include a LICENSE file. 
-
-**Let me know if you want to make this more specific to your project or have any other Markdown formatting requests!** 
+## Contributing
+This repository is intended for educational purposes and does not accept further contributions.
