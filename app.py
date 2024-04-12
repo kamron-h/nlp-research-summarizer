@@ -1,4 +1,3 @@
-import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -7,7 +6,10 @@ from langchain_community.vectorstores import FAISS
 from langchain_community.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from htmlTemplates import css, bot_template, user_template
+from flask import Flask, render_template, request, jsonify
+
+
+app = Flask(__name__)
 
 
 def get_pdf_text(pdf_docs):
@@ -45,12 +47,14 @@ def get_conversation_chain(vectorstore):
 
 
 def handle_userinput(user_question):
+    # TODO: Implement the handle_userinput function without using st.write
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
     display_chat_messages(st.session_state.chat_history)
 
 
 def display_chat_messages(messages):
+    # TODO: Implement the display_chat_messages function withot using st.write
     for msg_index, message in enumerate(messages):
         if msg_index % 2 == 0:
             st.write(user_template.replace(
@@ -58,71 +62,49 @@ def display_chat_messages(messages):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
+            
 
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-def main_page():
-    st.header("Chat with multiple PDFs :books:")
-    user_question = st.text_input("Ask a question about your documents:")
-    if user_question:
-        handle_userinput(user_question)
+@app.route('/assistant')
+def chat_page():
+    return render_template('assistant.html')
 
+@app.route('/upload', methods=['POST'])
+def upload_pdf():
+    uploaded_file = request.files['file']
+    if uploaded_file.filename != '':
+        uploaded_file.save(uploaded_file.filename)
+        pdf_text = get_pdf_text([uploaded_file.filename])
+        text_chunks = get_text_chunks(pdf_text)
+        vectorstore = get_vectorstore(text_chunks)
+        conversation_chain = get_conversation_chain(vectorstore)
+        return jsonify({'message': 'PDF uploaded successfully!'})
+    return jsonify({'message': 'No file uploaded!'})
 
-def about_page():
-    st.title("About")
-    st.markdown("""
-    This page is about the project and the developers involved.
-    - **Project**: Description of the project.
-    - **Developers**: Who developed the project.
-    """)
+@app.route('/team')
+def team_page():
+    return render_template('team.html')
 
+@app.route('/pricing')
+def pricing_page():
+    return render_template('pricing.html')
 
-def home_page():
-    st.title("Welcome to the PDF Chatbot, hosted by 'David'!")
-    st.write("This is a Streamlit intergrated webapp that allows you to chat with a 'David' about the contents of multiple PDF documents of your choice.")
-    st.write("To get started, upload your PDF documents and click the 'Process' button. Once the processing is complete, you can ask 'David' questions about the contents of the PDFs.")
-    st.write("You can navigate to the 'Streamlit Chatbot Page' to start chatting with 'David'...")
-    st.write("You can also navigate to the 'About' page to learn more about the project and the developers involved.")
-    st.write("Enjoy chatting with 'David'! :smiley:")
+@app.route('/login')
+def login_page():
+    return render_template('login.html')
 
+@app.route('/register')
+def register_page():
+    return render_template('register.html')
 
-def main():
-    load_dotenv()
-    st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:")
-    st.write(css, unsafe_allow_html=True)
-
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-
-    # Define pages in the main function
-    pages = {
-        "Home": home_page,
-        "About": about_page,
-        "Streamlit Chatbot Page": main_page
-    }
-
-    # Navigation menu at the top of the sidebar
-    with st.sidebar:
-        page = st.selectbox("Navigate", list(pages.keys()))
-
-        # Add a custom "margin" (spacing) below the navigation
-        st.markdown("<div style='margin-bottom: 7em;'></div>", unsafe_allow_html=True)
-
-        # File uploader moved below the navigation menu
-        pdf_docs = st.file_uploader("Upload your PDFs here", accept_multiple_files=True)
-        if st.button("Process"):
-            with st.spinner("Processing..."):
-                if pdf_docs:
-                    raw_text = get_pdf_text(pdf_docs)
-                    text_chunks = get_text_chunks(raw_text)
-                    vectorstore = get_vectorstore(text_chunks)
-                    st.session_state.conversation = get_conversation_chain(vectorstore)
-                    st.success("Ready to chat!")
-                else:
-                    st.error("Please upload at least one PDF document.")
-
-    # Call the page rendering function based on the user's selection
-    pages[page]()
-
+@app.route('/get_response', methods=['POST'])
+def get_response():
+    user_question = request.form['question']
+    response = process_question(user_question)  # Your chatbot logic here
+    return jsonify({'response': response})
 
 if __name__ == '__main__':
-    main()
+    app.run(debug=True) 

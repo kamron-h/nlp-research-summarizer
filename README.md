@@ -1,68 +1,69 @@
-# NLP Research Assistant
-LangChain, OpenAI, and Streamlit NLP chatbot for academic literature review assistance.
-
-## Introduction
-------------
-This is a Python based application that allows you to chat with a bot/model based on the input of multiple PDF documents. You can ask questions about the PDFs using natural language, and the application will provide relevant responses based on the content of the documents. Utilizing GPT-4 as large language model to generate accurate answers to your queries. 
-
-### Please note that the app will only respond to questions related to the loaded PDFs.
-
-### Python Version: 3.9 is required to run this application locally.
-
-## How It Works
-------------
-
-![PDF Research Assistant WebApp Diagram](/docs/david1.png)
-![PDF Research Assistant WebApp Diagram](/docs/david2.png)
-![PDF Research Assistant WebApp Diagram](/docs/david3.png)
-
-The application follows these steps to provide responses to your questions:
-
-1. PDF Loading: The app reads multiple PDF documents and extracts their text content.
-
-2. Text Chunking: The extracted text is divided into smaller chunks that can be processed effectively.
-
-3. Language Model: The application utilizes a language model to generate vector representations (embeddings) of the text chunks.
-
-4. Similarity Matching: When you ask a question, the app compares it with the text chunks and identifies the most semantically similar ones.
-
-5. Response Generation: The selected chunks are passed to the language model, which generates a response based on the relevant content of the PDFs.
-
-## Dependencies and Installation
-----------------------------
-To install the PDF Research Assistant WebApp, please follow these steps:
-
-1. Clone the repository to your local machine.
-
-2. Install the required dependencies by running the following command:
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. Create a new file named `.env` in the project directory and add the following environment variables:
-   ```
-   OPENAI_API_KEY=sk-0jFhNZGE2eEvC*********************
-   ```
-    ### Replace the value of `OPENAI_API_KEY` with your OpenAI API key !!!
 
 
-## Usage
------
-To use the PDF Research Assistant WebApp, follow these steps:
+**NLP Research Assistant** 
 
-1. Ensure that you have installed the required dependencies and added the OpenAI API key to the `.env` file.
+**Description**
 
-2. Run the `main.py` file using the Streamlit CLI. Execute the following command:
-   ```
-   streamlit run app.py
-   ```
+* Provide a brief description of your NLP chatbot project, what it does, and the problem it solves.
 
-3. The application will launch in your default web browser, displaying the user interface.
+**Installation**
 
-4. Load an individual PDF or either multiple PDF documents into the app by following the provided instructions.
+**Prerequisites**
 
-5. Ask questions in natural language about the loaded PDFs using the chat interface.
+* Python 3.x ([https://www.python.org/downloads/](https://www.python.org/downloads/))
+* pip (usually installed with Python)
 
-## Contributing
-------------
-This repository is intended for educational purposes and does not accept further contributions. It serves as supporting material for a YouTube tutorial that demonstrates how to build this project. Feel free to utilize and enhance the app based on your own requirements.
+**Steps**
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [invalid URL removed]
+    cd project-name
+    ```
+
+2.  **Create a virtual environment (recommended):**
+
+    ```bash
+    python3 -m venv env 
+    source env/bin/activate
+    ```
+
+3.  **Install dependencies:**
+
+     ```bash
+    pip install -r requirements.txt
+    ```
+
+**Running the Application**
+
+1.  **Make sure your virtual environment is activated (if you created one).**
+
+2.  **Start the Flask development server:**
+
+    ```bash
+    flask run
+    ```
+
+    * This typically starts the app at: http://127.0.0.1:5000/
+
+**Usage**
+
+* Open the provided URL (e.g.,  http://127.0.0.1:5000/) in your web browser.
+* Navigate to the chatbot interface.
+* Start interacting with the chatbot!
+
+**Additional Notes**
+
+* **Configuration:** If you have any app-specific configuration (e.g., API keys), explain how to set them up. 
+* **Database:** If you're using a database for chat history, include setup instructions.
+
+**Contributing**
+
+If you'd like to contribute, please refer to CONTRIBUTING.md: create a CONTRIBUTING.md file if needed or open an issue.
+
+**License**
+
+This project is licensed under the MIT License: optionally, include a LICENSE file. 
+
+**Let me know if you want to make this more specific to your project or have any other Markdown formatting requests!** 

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}<title>Assistant</title>{% endblock %}
+
+{% block head %}
+{% endblock %}
+{% block styles %}
+{% endblock %}
+
+
+{% block content %}
+<section class="py-5">
+    <div class="row">
+        <div class="col-lg-4 col-xl-4" style="scroll-behavior: smooth;max-height: 80vh;overflow-y: auto;scrollbar-width: none;-ms-overflow-style: none;">
+            <div class="row">
+                <div class="col-lg-12 col-xl-12">
+                    <div class="card" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                        <div class="card-body">
+                            <h4 class="card-title">Upload Documents</h4>
+                            <h6 class="text-muted card-subtitle my-2">1000Mb Limit</h6>
+                            <p class="card-text">You can only upload PDF files. Keep in mind that your Research Assistant can only answer questions about uploaded documents.</p>
+                            <div class="row">
+                                <form action="/upload_pdf" method="POST" enctype="multipart/form-data"> 
+                                    <input type="file" class="my-3" name="pdf_file"> 
+                                    <button class="btn btn-primary w-75 py-1 my-3" type="submit">Sync Document(s)</button>
+                                    <p id="uploaded-files">No files uploaded yet.</p>
+                                </form> 
+                                <div class="col-12 my-3">
+                                    <p class="mb-1"><span style="text-decoration: underline;">TheWizardOfOz.pdf</span> <span style="color: rgb(25, 135, 84);">(Ready)</span></p>
+                                    <p class="mb-1"><span style="text-decoration: underline;">TheWizardOfOz.pdf</span> <span style="color: rgb(25, 135, 84);">(Ready)</span></p>
+                                    <p class="mb-1"><span style="text-decoration: underline;">TheWizardOfOz.pdf</span> <span style="color: rgb(25, 135, 84);">(Ready)</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                        <div class="card-body">
+                            <h6 class="card-title" style="text-align: right;">Chat Title</h6>
+                            <h6 class="text-muted card-subtitle mb-2" style="text-align: right;">05-23-24</h6>
+                            <p class="card-text">Who was cited in the conclusion where the document references cloud computing on the edge.</p><a class="card-link" href="#">Delete</a><a class="card-link" href="#">Open</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="container">
+                <div class="row">
+                    <div class="col p-0">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h5 style="text-align: center;">Research Assistant</h5>
+                            </div>
+                            <div class="col d-flex d-xl-flex justify-content-center justify-content-xl-center">
+                                <hr class="d-xxl-flex w-75" style="padding-top: 0;margin-top: 0;">
+                            </div>
+                            <div class="col-xl-12" style="scroll-behavior: smooth;max-height: 70vh;overflow-y: auto;">
+                                <div id="chat-history"> 
+                                </div> 
+                                <!-- <div class="card my-3" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><img alt="black and white short coated dog" style="width: 70px;height: 70px;border-radius: 50%;margin-right: 0.5em;" src="static/assets/img/photo-1561037404-61cd46aa615b.jpg">You</h4>
+                                        <p class="card-text my-4">Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                                        <h6 class="text-end text-muted card-subtitle mb-2">05-23-24</h6>
+                                    </div>
+                                </div>
+                                <div class="card my-3" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><img alt="white and brown cat on green grass during daytime" style="width: 70px;height: 70px;border-radius: 50%;margin-right: 0.5em;" src="static/assets/img/photo-1598188306155-25e400eb5078.jpg">David</h4>
+                                        <p class="card-text my-4">Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                                        <h6 class="text-end text-muted card-subtitle mb-2">05-23-24</h6>
+                                    </div>
+                                </div>
+                                <div class="card my-3" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><img alt="white and brown cat on green grass during daytime" style="width: 70px;height: 70px;border-radius: 50%;margin-right: 0.5em;" src="static/assets/img/photo-1598188306155-25e400eb5078.jpg">David</h4>
+                                        <p class="card-text my-4">Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                                        <h6 class="text-end text-muted card-subtitle mb-2">05-23-24</h6>
+                                    </div>
+                                </div>
+                                <div class="card my-3" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><img alt="white and brown cat on green grass during daytime" style="width: 70px;height: 70px;border-radius: 50%;margin-right: 0.5em;" src="static/assets/img/photo-1598188306155-25e400eb5078.jpg">David</h4>
+                                        <p class="card-text my-4">Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                                        <h6 class="text-end text-muted card-subtitle mb-2">05-23-24</h6>
+                                    </div>
+                                </div>
+                                <div class="card my-3" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
+                                    <div class="card-body">
+                                        <h4 class="card-title"><img alt="white and brown cat on green grass during daytime" style="width: 70px;height: 70px;border-radius: 50%;margin-right: 0.5em;" src="static/assets/img/photo-1598188306155-25e400eb5078.jpg">David</h4>
+                                        <p class="card-text my-4">Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
+                                        <h6 class="text-end text-muted card-subtitle mb-2">05-23-24</h6>
+                                    </div>
+                                </div> -->
+                            </div>
+                        <!--
+                            <div class="col">
+                                <div class="row d-flex justify-content-center mt-3">
+                                    <div class="col-11 d-flex align-items-center">
+
+
+                                        <form id="chat-form" action="/get_response" method="POST">  
+                                            <input type="text" id="question-input" class="w-100 h-100 rounded-1 mx-1" placeholder="  Ask a question...">
+                                            <button class="btn btn-primary" type="submit" style="padding-right: 0.5em;padding-left: 0.5em;border-radius: 12px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-shift-fill">
+                                                <path d="M7.27 2.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H11.5v3a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-3H1.654C.78 10.5.326 9.455.924 8.816L7.27 2.047z"></path>
+                                                </svg>
+                                            </button>
+                                        </form> 
+                                    </div>
+                                </div>
+                            </div>
+                        -->
+
+
+                            <div class="col">
+                                <div class="row d-flex justify-content-center mt-3">
+                                    <div class="col-11 d-flex justify-content-center">
+                                        <form id="chat-form"  class="h-100 rounded-1 mx-1 justify-content-center" style="width: 90%" action="/get_response" method="POST">
+                                            <input type="text" class="h-100 rounded-1 mx-1" style="width: 90%" id="question-input" placeholder="  Ask a question...">
+                                            <button class="btn btn-primary" type="sumbit" style="padding-right: 0.5em;padding-left: 0.5em;border-radius: 12px;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-shift-fill">
+                                                    <path d="M7.27 2.047a1 1 0 0 1 1.46 0l6.345 6.77c.6.638.146 1.683-.73 1.683H11.5v3a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-3H1.654C.78 10.5.326 9.455.924 8.816L7.27 2.047z"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- Start: Footer Multi Column -->
+{% endblock %}
+
+
+{% block scripts %}
+<!-- File upload using AJAX -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="static/assets/js/pdf_upload.js"></script>
+<script src="static/assets/js/chat_interaction.js"></script>
+{% endblock %}
