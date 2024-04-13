@@ -77,5 +77,11 @@ The application follows these steps to provide responses to your questions:
 * **Configuration:** If you have any app-specific configuration (e.g., API keys), explain how to set them up. 
 * **Database:** If you're using a database for chat history, include setup instructions.
 
+### Important Points:
+
+* **Security:** When using pickle, be aware that unpickling data can execute arbitrary code if the data is crafted by a malicious user. Only unpickle data you trust.
+* **Redis Configuration:** The above example assumes Redis is running on localhost with the default port 6379. Adjust these settings as necessary.
+* **Session Management:** We’re using Flask’s session.sid as the Redis key for storing each user’s vectorstore. Ensure your Flask session is securely configured.
+
 ## Contributing
 This repository is intended for educational purposes and does not accept further contributions.

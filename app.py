@@ -1,110 +1,207 @@
+import os
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_community.vectorstores import FAISS
-from langchain_community.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify, render_template, session
+from werkzeug.utils import secure_filename
+import redis
+import pickle
+from uuid import uuid4
+import openai
 
+from redis.exceptions import RedisError
+
+load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('OPENAI_API_KEY')
 
 
-def get_pdf_text(pdf_docs):
-    text = ""
-    for pdf in pdf_docs:
-        # Manually create a PdfReader instance
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            page_text = page.extract_text()
-            if page_text:  # Ensure there's text to add
-                text += page_text
-        # No need to explicitly close the PdfReader as it does not lock the file
-    return text
-
-
-def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(
-        separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len
+# Redis Configuration for session handling and data caching
+try:
+    redis_client = redis.Redis(
+        host=os.getenv('REDIS_HOST', 'localhost'),
+        port=os.getenv('REDIS_PORT', 6379),
+        password=os.getenv('REDIS_PASSWORD'),
+        ssl=os.getenv('REDIS_SSL', 'False').lower() in ['true', '1', 't'],
+        decode_responses=True  # Automatically decode responses to Unicode, use it if you prefer not handling decoding manually
     )
-    return text_splitter.split_text(text)
+except RedisError as e:
+    print(f"Redis connection error: {e}")
 
-
-def get_vectorstore(text_chunks):
-    embeddings = OpenAIEmbeddings()
-    return FAISS.from_texts(texts=text_chunks, embedding=embeddings)
-
-
-def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
-    memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
-    return ConversationalRetrievalChain.from_llm(llm=llm, retriever=vectorstore.as_retriever(), memory=memory)
-
-
-def handle_userinput(user_question):
-    # TODO: Implement the handle_userinput function without using st.write
-    response = st.session_state.conversation({'question': user_question})
-    st.session_state.chat_history = response['chat_history']
-    display_chat_messages(st.session_state.chat_history)
-
-
-def display_chat_messages(messages):
-    # TODO: Implement the display_chat_messages function withot using st.write
-    for msg_index, message in enumerate(messages):
-        if msg_index % 2 == 0:
-            st.write(user_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace(
-                "{{MSG}}", message.content), unsafe_allow_html=True)
-            
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
+
 @app.route('/assistant')
 def chat_page():
     return render_template('assistant.html')
 
-@app.route('/upload', methods=['POST'])
-def upload_pdf():
-    uploaded_file = request.files['file']
-    if uploaded_file.filename != '':
-        uploaded_file.save(uploaded_file.filename)
-        pdf_text = get_pdf_text([uploaded_file.filename])
-        text_chunks = get_text_chunks(pdf_text)
-        vectorstore = get_vectorstore(text_chunks)
-        conversation_chain = get_conversation_chain(vectorstore)
-        return jsonify({'message': 'PDF uploaded successfully!'})
-    return jsonify({'message': 'No file uploaded!'})
 
 @app.route('/team')
 def team_page():
     return render_template('team.html')
 
+
 @app.route('/pricing')
 def pricing_page():
     return render_template('pricing.html')
+
 
 @app.route('/login')
 def login_page():
     return render_template('login.html')
 
+
 @app.route('/register')
 def register_page():
     return render_template('register.html')
 
-@app.route('/get_response', methods=['POST'])
-def get_response():
-    user_question = request.form['question']
-    response = process_question(user_question)  # Your chatbot logic here
-    return jsonify({'response': response})
+
+# @app.route('/upload_pdf', methods=['POST'])
+# def upload_pdf():
+#     uploaded_file = request.files.get('pdf_file')
+#     if uploaded_file and uploaded_file.filename != '':
+#         # Set the directory where files should be saved
+#         save_directory = 'pdfs'
+#         if not os.path.exists(save_directory):
+#             os.makedirs(save_directory)
+#
+#         # Secure the filename and create the full path
+#         filename = secure_filename(uploaded_file.filename)
+#         file_path = os.path.join(save_directory, filename)
+#
+#         # Save the file to the specified directory
+#         uploaded_file.save(file_path)
+#
+#         # After saving, you might want to process the PDF
+#         pdf_text = get_pdf_text(file_path)
+#         return jsonify({'message': 'PDF uploaded successfully!', 'pdf_text': pdf_text})
+#     return jsonify({'message': 'No file uploaded!'})
+
+
+def process_all_pdfs(directory_path):
+    """Process all PDF files within the specified directory."""
+    for filename in os.listdir(directory_path):
+        if filename.endswith('.pdf'):
+            file_path = os.path.join(directory_path, filename)
+            try:
+                pdf_text = get_pdf_text(file_path)
+                session_id = get_session_id()  # Generate or retrieve session ID
+                store_text_in_cache(pdf_text, session_id)  # Store the extracted text
+                print(f"Processed {filename} successfully.")
+            except Exception as e:
+                print(f"Failed to process {filename}: {e}")
+
+
+def get_pdf_text(file_path):
+    """Extract text from a PDF file."""
+    text = ""
+    try:
+        pdf_reader = PdfReader(file_path)  # Open the PDF file
+        for page in pdf_reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text  # Append the text of each page to the text variable
+    except Exception as e:
+        print(f"Error reading PDF: {e}")
+    return text
+
+
+@app.route('/upload_pdf', methods=['POST'])
+def upload_pdf():
+    # Retrieve list of files from the request
+    uploaded_files = request.files.getlist('pdf_files')  # Adjust name according to your form
+
+    if not uploaded_files:
+        return jsonify({'message': 'No files uploaded'}), 400
+
+    for uploaded_file in uploaded_files:
+        # Check if the file is a PDF by checking its filename attribute
+        if uploaded_file.filename.endswith('.pdf'):
+            filename = secure_filename(uploaded_file.filename)
+            unique_id = os.urandom(6).hex()  # Short unique ID
+            filename = f"{unique_id}_{filename}"
+            file_path = os.path.join('uploaded_pdfs', filename)
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            uploaded_file.save(file_path)
+
+            try:
+                pdf_text = get_pdf_text(file_path)
+                session_id = get_session_id()
+                store_text_in_cache(pdf_text, session_id)
+                print(f"Uploaded and processed {filename}")
+            except Exception as e:
+                print(f"Error processing file {filename}: {e}")
+                continue  # Continue processing other files even if one fails
+
+    # Return a response after all files are processed
+    return render_template('assistant.html', message='All files uploaded and processed')
+
+
+def store_text_in_cache(text, session_id):
+    try:
+        print(f"Storing text for session_id: {session_id}")
+        redis_client.set(session_id, text.encode('utf-8'))
+        print("Storage successful")
+    except Exception as e:
+        print(f"Error while storing text in cache: {e}")
+
+
+def get_text_from_cache(session_id):
+    try:
+        print(f"Retrieving text for session_id: {session_id}")
+        text = redis_client.get(session_id)
+        if text:
+            print("Text retrieval successful")
+            return text.decode('utf-8')
+        else:
+            print("No text found in cache")
+            return None
+    except Exception as e:
+        print(f"Error retrieving text from cache: {e}")
+        return None
+
+
+@app.route('/answer_question', methods=['POST'])
+def answer_question():
+    session_id = request.args.get('session_id')
+    question = request.json.get('question')
+    if session_id is None:
+        return jsonify({'message': 'Session ID is missing.'}), 400
+
+    print(f"Question: {question}")
+    print(f"Session ID: {session_id}")
+
+    context = get_text_from_cache(session_id)
+    if context:
+        answer = ask_openai(question, context)
+        return jsonify({'answer': answer})
+    else:
+        return jsonify({'message': 'No document context available. Please upload a document first.'})
+
+
+def ask_openai(question, context):
+    """Ask a question to OpenAI using the provided context."""
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-002",
+            prompt=f"Question: {question}\n\nContext: {context}\n\nAnswer:",
+            max_tokens=150
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        print(f"Error with OpenAI API: {e}")
+        return "I'm unable to retrieve an answer at the moment."
+
+
+def get_session_id():
+    """Generate or retrieve a unique session ID."""
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid4())
+    return session['session_id']
+
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)
