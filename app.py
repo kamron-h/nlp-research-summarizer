@@ -36,7 +36,8 @@ def home():
 
 @app.route('/assistant')
 def chat_page():
-    return render_template('assistant.html')
+    session_id = get_session_id()  # Assuming you have a function to retrieve or create a session ID
+    return render_template('assistant.html', session_id=session_id)
 
 
 @app.route('/team')
@@ -143,8 +144,12 @@ def upload_pdf():
 def store_text_in_cache(text, session_id):
     try:
         print(f"Storing text for session_id: {session_id}")
-        redis_client.set(session_id, text.encode('utf-8'))
-        print("Storage successful")
+        # Ensure the session_id is a string and handle encoding within Redis
+        success = redis_client.set(str(session_id), text)
+        if success:
+            print("Storage successful")
+        else:
+            print("Storage failed")
     except Exception as e:
         print(f"Error while storing text in cache: {e}")
 
@@ -152,10 +157,11 @@ def store_text_in_cache(text, session_id):
 def get_text_from_cache(session_id):
     try:
         print(f"Retrieving text for session_id: {session_id}")
-        text = redis_client.get(session_id)
+        # Ensure the session_id is a string
+        text = redis_client.get(str(session_id))
         if text:
             print("Text retrieval successful")
-            return text.decode('utf-8')
+            return text
         else:
             print("No text found in cache")
             return None
@@ -183,14 +189,18 @@ def answer_question():
 
 
 def ask_openai(question, context):
-    """Ask a question to OpenAI using the provided context."""
+    """Ask a question to OpenAI using the provided context with the chat completions endpoint."""
     try:
-        response = openai.Completion.create(
-            model="text-davinci-002",
-            prompt=f"Question: {question}\n\nContext: {context}\n\nAnswer:",
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # Specify the chat model
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": question}
+            ],
             max_tokens=150
         )
-        return response.choices[0].text.strip()
+        # Extracting text from the first response choice
+        return response['choices'][0]['message']['content'].strip()
     except Exception as e:
         print(f"Error with OpenAI API: {e}")
         return "I'm unable to retrieve an answer at the moment."
