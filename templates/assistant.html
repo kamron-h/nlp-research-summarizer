@@ -24,10 +24,10 @@
         <div class="col-lg-4 col-xl-4" style="scroll-behavior: smooth;max-height: 80vh;overflow-y: auto;scrollbar-width: none;-ms-overflow-style: none;">
             <div class="row">
                 <div class="col-lg-12 col-xl-12">
-                    <div class="card" style="border-color: var(--bs-body-color);border-width: 2px;">
+                    <div class="card" style="border-color: var(--bs-body-color);border-width: 2px;margin: 0.5em;">
                         <div class="card-body">
                             <h4 class="card-title">Upload Documents</h4>
-                            <h6 class="text-muted card-subtitle my-2">1000Mb Limit</h6>
+                            <h6 class="text-muted card-subtitle my-2">100Mb Limit</h6>
                             <p class="card-text">You can only upload PDF files. Keep in mind that your Research Assistant can only answer questions about uploaded documents.</p>
                             <div class="row">
                                 <form id="upload-form" enctype="multipart/form-data">
@@ -41,13 +41,13 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card" style="border-color: var(--bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">
-                        <div class="card-body">
-                            <h6 class="card-title" style="text-align: right;">Chat Title</h6>
-                            <h6 class="text-muted card-subtitle mb-2" style="text-align: right;">05-23-24</h6>
-                            <p class="card-text">Who was cited in the conclusion where the document references cloud computing on the edge.</p><a class="card-link" href="#">Delete</a><a class="card-link" href="#">Open</a>
-                        </div>
-                    </div>
+<!--                    <div class="card" style="border-color: var(&#45;&#45;bs-body-color);border-width: 2px;/*border-left-width: 2px;*/margin: 0.5em;">-->
+<!--                        <div class="card-body">-->
+<!--                            <h6 class="card-title" style="text-align: right;">Chat Title</h6>-->
+<!--                            <h6 class="text-muted card-subtitle mb-2" style="text-align: right;">05-23-24</h6>-->
+<!--                            <p class="card-text">Who was cited in the conclusion where the document references cloud computing on the edge.</p><a class="card-link" href="#">Delete</a><a class="card-link" href="#">Open</a>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -90,6 +90,8 @@
     </div>
 </section><!-- Start: Footer Multi Column -->
 {% endblock %}
+
+
 
 {% block scripts %}
 <!-- File upload using AJAX -->
