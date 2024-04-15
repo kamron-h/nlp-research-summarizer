@@ -3,17 +3,17 @@ import os
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from flask import Flask, request, jsonify, render_template, session
+from sentence_transformers import SentenceTransformer
 from werkzeug.utils import secure_filename
 import redis
 from uuid import uuid4
 import openai
 
 from redis.exceptions import RedisError
-from sentence_transformers import SentenceTransformer
+# from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import pdfplumber
-
 
 
 load_dotenv()
@@ -129,7 +129,6 @@ def get_text_from_cache(session_id):
     except Exception as e:
         print(f"Error retrieving text from cache for session_id {session_id}: {e}")
         return None
-
 
 
 def ask_openai(question, context):

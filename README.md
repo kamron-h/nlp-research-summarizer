@@ -41,11 +41,18 @@ The application follows these steps to provide responses to your questions:
     cd project-name
     ```
 
+
 2.  **Create a virtual environment (recommended):**
 
     ```bash
     python3 -m venv env 
     source env/bin/activate
+    ```
+    
+* If you're using Windows, the activation command is:
+    
+    ```powershell
+    .\venv\Scripts\Activate.ps1
     ```
 
 3.  **Install dependencies:**
@@ -53,6 +60,15 @@ The application follows these steps to provide responses to your questions:
      ```bash
     pip install -r requirements.txt
     ```
+4.  **Set up the environment variables:**
+
+    Create a `.env` file in the root directory of the project and add the following variables:
+
+    ```plaintext
+    OPENAI_API_KEY=your_openai_api_key
+    ```
+
+    Replace `your_openai_api_key` with your OpenAI API key.
 
 ### Running the Application
 
@@ -68,9 +84,18 @@ The application follows these steps to provide responses to your questions:
 
 ### Usage
 
+To use the MultiPDF Chat App, follow these steps:
+
 * Open the provided URL (e.g.,  http://127.0.0.1:5000/) in your web browser.
-* Navigate to the chatbot interface.
-* Start interacting with the chatbot!
+
+1. Ensure that you have installed the required dependencies and added the OpenAI API key to the `.env` file.
+
+2. Navigate to the Assistant page.
+
+3. Load multiple PDF documents into the app by following the provided instructions.
+
+4. Ask questions in natural language about the loaded PDFs using the chat interface.
+
 
 ### Additional Notes
 
