@@ -8,7 +8,7 @@ $(document).ready(function() {
         var files = this.files; // Get the list of files
         if (files.length > 0) {
             $.each(files, function(i, file) {
-                fileListContainer.append('<p class="mb-1"><span style="text-decoration: underline;">' + file.name + '</span> <span style="color: rgb(25, 135, 84);">(Ready)</span></p>');
+                fileListContainer.append('<p class="mb-1"><span style="text-decoration: underline;">' + file.name + '</span></p>');
             });
         } else {
             fileListContainer.html('<p>No files uploaded yet.</p>'); // Show default message if no file

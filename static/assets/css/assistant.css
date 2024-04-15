@@ -9,3 +9,9 @@
   border-radius: 13px;
 }
 
+.file-names {
+    width: 100%; /* Adjust as necessary */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

@@ -30,10 +30,12 @@
                             <h6 class="text-muted card-subtitle my-2">100Mb Limit</h6>
                             <p class="card-text">You can only upload PDF files. Keep in mind that your Research Assistant can only answer questions about uploaded documents.</p>
                             <div class="row">
-                                <form id="upload-form" enctype="multipart/form-data">
-                                    <input type="file" class="my-3" name="pdf_files" multiple>
+                                <form id="upload-form" enctype="multipart/form-data" class="text-center">
+                                    <input type="file" class="my-3 w-100" name="pdf_files" multiple>
+                                    <div id="file-names" class="file-names"></div> <!-- Container for displaying filenames -->
                                     <button class="btn btn-primary w-75 py-1 my-3" type="submit">Sync Document(s)</button>
                                 </form>
+
                                 <div class="col-12 my-3" id="file-list">
                                     <!-- Dynamically added file names will go here -->
                                     <p>No files uploaded yet.</p>
