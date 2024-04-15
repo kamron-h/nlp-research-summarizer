@@ -11,6 +11,7 @@ from redis.exceptions import RedisError
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
+import pdfplumber
 
 
 load_dotenv()
@@ -76,58 +77,63 @@ index = faiss.IndexFlatL2(dimension)
 @app.route('/upload_pdf', methods=['POST'])
 def upload_pdf():
     uploaded_files = request.files.getlist('pdf_files')
+    if not uploaded_files:
+        return jsonify({'message': 'No files uploaded'}), 400
+
     session_id = get_session_id()
-    texts = []
+    all_texts = []
 
     for uploaded_file in uploaded_files:
         if uploaded_file and uploaded_file.filename.endswith('.pdf'):
             filename = secure_filename(uploaded_file.filename)
-            file_path = os.path.join('uploaded_pdfs', filename)
+            file_path = os.path.join('temporary_pdfs', filename)
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
             uploaded_file.save(file_path)
+
             text = extract_text_from_pdf(file_path)
             if text:
-                texts.append(text)
-                redis_client.set(f"{session_id}_{filename}", text)
+                all_texts.append(text)
+            os.remove(file_path)  # Make sure file is deleted after reading
 
-    embeddings = model.encode(texts)
-    index.add(np.array(embeddings))
+    combined_text = '\n'.join(all_texts)
+    store_text_in_cache(combined_text, session_id)  # Store combined text in Redis
+    return jsonify({'message': f'Processed {len(uploaded_files)} files', 'session_id': session_id})
 
-    return jsonify({'message': f'Processed {len(uploaded_files)} files'})
 
 
 def store_text_in_cache(text, session_id):
     try:
-        print(f"Storing text for session_id: {session_id}")
         # Ensure the session_id is a string and handle encoding within Redis
         success = redis_client.set(str(session_id), text)
         if success:
-            print("Storage successful")
+            print(f"Storing text for session_id: {session_id} - Storage successful")
         else:
-            print("Storage failed")
+            print(f"Storing text for session_id: {session_id} - Storage failed")
     except Exception as e:
-        print(f"Error while storing text in cache: {e}")
+        print(f"Error while storing text in cache for session_id {session_id}: {e}")
 
 
 def get_text_from_cache(session_id):
     try:
-        print(f"Retrieving text for session_id: {session_id}")
         # Ensure the session_id is a string
         text = redis_client.get(str(session_id))
         if text:
-            print("Text retrieval successful")
-            # print(text[:100])  # Display the first 100 characters of the text
+            print(f"Retrieving text for session_id: {session_id} - Text retrieval successful")
             return text
         else:
-            print("No text found in cache")
+            print(f"Retrieving text for session_id: {session_id} - No text found in cache")
             return None
     except Exception as e:
-        print(f"Error retrieving text from cache: {e}")
+        print(f"Error retrieving text from cache for session_id {session_id}: {e}")
         return None
+
 
 
 def ask_openai(question, context):
     """Ask a question to OpenAI using the provided context with the chat completions endpoint."""
     try:
+        print(f"(ask_openai)Try - Question: {question}")
+        print(f"(ask_openai)Try - Context: {context}")
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",  # Use the appropriate chat model
             messages=[
@@ -137,6 +143,7 @@ def ask_openai(question, context):
             ],
             max_tokens=150
         )
+        print(f"(ask_openai)Try - OpenAI response: {response}")
         # Extracting text from the first response choice
         return response['choices'][0]['message']['content'].strip()
     except Exception as e:
@@ -151,10 +158,13 @@ def answer_question():
     if session_id is None:
         return jsonify({'message': 'Session ID is missing.'}), 400
 
+    print(f"\nGetting text for session_id: {session_id}")
     context = get_text_from_cache(session_id)  # Retrieve document context stored in Redis
 
     if context:
         answer = ask_openai(question, context)
+        print(f"\nAnswer: {answer}")
+        print(f"\nQuestion: {question}")
         return jsonify({'answer': answer})
     else:
         return jsonify({'message': 'No document context available. Please upload a document first.'})
@@ -162,12 +172,15 @@ def answer_question():
 
 def extract_text_from_pdf(file_path):
     text = ""
+    print(f"Reading PDF: {file_path}")
     try:
-        pdf_reader = PdfReader(file_path)
-        for page in pdf_reader.pages:
-            page_text = page.extract_text()
-            if page_text:
-                text += page_text + '\n'
+        with pdfplumber.open(file_path) as pdf:
+            for page in pdf.pages:
+                print(f"Extracting text from page {page.page_number}")
+                page_text = page.extract_text()
+                if page_text:
+                    print(page_text[:100])  # Print first 100 characters of the extracted text
+                    text += page_text + '\n'
     except Exception as e:
         print(f"Error reading PDF {file_path}: {e}")
     return text
