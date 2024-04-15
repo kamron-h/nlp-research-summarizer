@@ -1,3 +1,4 @@
+
 import os
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
@@ -12,6 +13,7 @@ from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
 import pdfplumber
+
 
 
 load_dotenv()
@@ -31,6 +33,7 @@ try:
     )
 except RedisError as e:
     print(f"Redis connection error: {e}")
+
 
 
 @app.route('/')
