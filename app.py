@@ -35,7 +35,6 @@ except RedisError as e:
     print(f"Redis connection error: {e}")
 
 
-
 @app.route('/')
 def home():
     session_id = get_session_id()  # Assuming you have a function to retrieve or create a session ID
@@ -101,7 +100,6 @@ def upload_pdf():
     combined_text = '\n'.join(all_texts)
     store_text_in_cache(combined_text, session_id)  # Store combined text in Redis
     return jsonify({'message': f'Processed {len(uploaded_files)} files', 'session_id': session_id})
-
 
 
 def store_text_in_cache(text, session_id):
