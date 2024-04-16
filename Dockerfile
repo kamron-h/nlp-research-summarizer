@@ -20,8 +20,9 @@ RUN adduser \
 
 # Copying requirements first to leverage Docker cache
 COPY requirements.txt .
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount=type=cache,id=my_cache_id,target=/root/.cache/pip \
     python -m pip install -r requirements.txt
+
 
 USER appuser
 COPY . .
