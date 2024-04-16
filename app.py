@@ -1,7 +1,6 @@
 
 import os
 from dotenv import load_dotenv
-from PyPDF2 import PdfReader
 from flask import Flask, request, jsonify, render_template, session
 from sentence_transformers import SentenceTransformer
 from werkzeug.utils import secure_filename
