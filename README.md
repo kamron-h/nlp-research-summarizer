@@ -3,6 +3,11 @@
 # NLP Research Assistant
 #### LangChain, OpenAI, PgVector, and Flask NLP chatbot for academic literature review assistance.
 
+## Authors
+* Kamron Hopkins - hopkinsk19@students.ecu.edu
+Mehki Corpening - corpeningm19@students.ecu.edu
+Robert Fernald - fernaldr16@students.ecu.edu
+
 ## Description
 
 * This is a Python based application that allows you to chat with a bot/model based on the input of multiple PDF documents. You can ask questions about the PDFs using natural language, and the application will provide relevant responses based on the content of the documents. Utilizing GPT-4 as large language model to generate accurate answers to your queries.
@@ -37,7 +42,7 @@ The application follows these steps to provide responses to your questions:
 1.  **Clone the repository:**
 
     ```bash
-    git clone [invalid URL removed]
+    git clone [https://github.com/Vamp-ECU/nlp-research-summarizer]
     cd project-name
     ```
 
