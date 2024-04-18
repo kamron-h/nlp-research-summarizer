@@ -130,22 +130,16 @@ def get_text_from_cache(session_id):
 
 
 def ask_openai(question, context):
-    """Ask a question to OpenAI using the provided context with the chat completions endpoint."""
+    """Ask a question to OpenAI using the provided context."""
     try:
-        print(f"(ask_openai)Try - Question: {question}")
-        print(f"(ask_openai)Try - Context: {context}")
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",  # Use the appropriate chat model
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": context},  # Pass the whole document context
-                {"role": "user", "content": question}  # Then the specific question
-            ],
-            max_tokens=150
+        prompt = f"{context}\n\n###\n\n{question}"
+        response = openai.Completion.create(
+            engine="text-davinci-003",  # Change as per latest available models
+            prompt=prompt,
+            max_tokens=150,
+            temperature=0.7
         )
-        print(f"(ask_openai)Try - OpenAI response: {response}")
-        # Extracting text from the first response choice
-        return response['choices'][0]['message']['content'].strip()
+        return response.choices[0].text.strip()
     except Exception as e:
         print(f"Error with OpenAI API: {e}")
         return "I'm unable to retrieve an answer at the moment."
@@ -158,13 +152,10 @@ def answer_question():
     if session_id is None:
         return jsonify({'message': 'Session ID is missing.'}), 400
 
-    print(f"\nGetting text for session_id: {session_id}")
     context = get_text_from_cache(session_id)  # Retrieve document context stored in Redis
 
     if context:
         answer = ask_openai(question, context)
-        print(f"\nAnswer: {answer}")
-        print(f"\nQuestion: {question}")
         return jsonify({'answer': answer})
     else:
         return jsonify({'message': 'No document context available. Please upload a document first.'})
