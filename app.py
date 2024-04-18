@@ -133,14 +133,12 @@ def ask_openai(question, context):
     """Ask a question to OpenAI using the provided context with the latest API method."""
     try:
         prompt = f"{context.strip()}\n\n###\n\n{question.strip()}"
-        response = openai.Completion.create(
-            model="gpt-3.5-turbo",  # Ensure to use an available and appropriate model
-            prompt=prompt,
-            max_tokens=150,
-            temperature=0.7,
-            top_p=1.0,
-            n=1,
-            stop=["\n", "###"]  # Define any stopping sequence
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ]
         )
         return response.choices[0].text.strip()  # Extracting the text from the response
     except Exception as e:
