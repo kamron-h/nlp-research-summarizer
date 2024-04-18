@@ -130,20 +130,19 @@ def get_text_from_cache(session_id):
 
 
 def ask_openai(question, context):
+    """Ask a question to OpenAI using the provided context with the latest API method."""
     try:
-        prompt = f"{context}\n\n###\n\n{question}"
-        response = openai.ChatCompletion.create(
-            model="gpt-4",  # Assuming 'gpt-4' as an example if available
-            messages=[{
-                "role": "system",
-                "content": "You are a helpful assistant."
-            }, {
-                "role": "user",
-                "content": prompt
-            }],
-            max_tokens=150
+        prompt = f"{context.strip()}\n\n###\n\n{question.strip()}"
+        response = openai.Completion.create(
+            model="gpt-3.5-turbo",  # Ensure to use an available and appropriate model
+            prompt=prompt,
+            max_tokens=150,
+            temperature=0.7,
+            top_p=1.0,
+            n=1,
+            stop=["\n", "###"]  # Define any stopping sequence
         )
-        return response.choices[0].message['content'].strip()
+        return response.choices[0].text.strip()  # Extracting the text from the response
     except Exception as e:
         print(f"Error with OpenAI API: {e}")
         return "I'm unable to retrieve an answer at the moment."
