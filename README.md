@@ -3,11 +3,6 @@
 # NLP Research Assistant
 #### LangChain, OpenAI, PgVector, and Flask NLP chatbot for academic literature review assistance.
 
-## Authors
-Kamron Hopkins - hopkinsk19@students.ecu.edu \
-Mehki Corpening - corpeningm19@students.ecu.edu \
-Robert Fernald - fernaldr16@students.ecu.edu 
-
 ## Description
 
 * This is a Python based application that allows you to chat with a bot/model based on the input of multiple PDF documents. You can ask questions about the PDFs using natural language, and the application will provide relevant responses based on the content of the documents. Utilizing GPT-4 as large language model to generate accurate answers to your queries.
@@ -101,11 +96,6 @@ To use the MultiPDF Chat App, follow these steps:
 
 4. Ask questions in natural language about the loaded PDFs using the chat interface.
 
-
-### Additional Notes
-
-* **Configuration:** If you have any app-specific configuration (e.g., API keys), explain how to set them up. 
-* **Database:** If you're using a database for chat history, include setup instructions.
 
 ### Important Points:
 
